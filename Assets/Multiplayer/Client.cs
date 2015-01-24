@@ -2,9 +2,9 @@
 using System.Collections;
 
 public class Client : MonoBehaviour {
-
-	public Transform cubePrefab;
+	
 	public Transform humanPrefab;
+	public Transform monsterPrefab;
 
 	void OnServerInitialized(){ 
 		Transform myTransform = (Transform)Network.Instantiate (humanPrefab, transform.position, transform.rotation, 0);
@@ -16,6 +16,6 @@ public class Client : MonoBehaviour {
 	}
 
 	void SpawnPlayer(){ 
-		Transform myTransform = (Transform)Network.Instantiate (cubePrefab, transform.position, transform.rotation, 0);
+		Transform myTransform = (Transform)Network.Instantiate (monsterPrefab, transform.position, transform.rotation, 0);
 	}
 }

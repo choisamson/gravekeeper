@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FOVScript_VLS : MonoBehaviour
+public class FieldOfVision: MonoBehaviour
 {
 	public GameObject player;
     private Color kColor;

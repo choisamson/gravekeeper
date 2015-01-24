@@ -3,7 +3,7 @@ using System.Collections;
 /// <summary>
 /// Multiplayer script is attached to the MultiplayerManager object.
 /// </summary>
-public class MultiplayerScript : MonoBehaviour
+public class Server : MonoBehaviour
 {
 	// Variables_______________________
 	private string titleMessage = "GIJAM2 TEST";

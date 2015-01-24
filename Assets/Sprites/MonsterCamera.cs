@@ -1,18 +1,16 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class playerCamera : MonoBehaviour {
-
-	public string cameraName = "pcamera";
-
+public class MonsterCamera: MonoBehaviour {
+	
+	public string cameraName = "mcamera";
+	
 	// Use this for initialization
 	void Start () {
 		if(networkView.isMine){
-			Debug.Log ("is human");
 			this.camera.enabled = true;
 		}
 		else{
-			Debug.Log ("not human");
 			this.camera.enabled = false;
 		}
 	}

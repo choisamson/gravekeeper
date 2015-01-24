@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ServerMovement : MonoBehaviour 
+public class HumanMovement : MonoBehaviour 
 {
     public float magnitude = 5;
     public float speed = 5;

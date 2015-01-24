@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class ClientMovement : MonoBehaviour 
+public class MonsterMovement: MonoBehaviour 
 {
 	public float magnitude = 5;
 	public float speed = 5;
