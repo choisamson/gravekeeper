@@ -7,7 +7,7 @@ public class MultiplayerScript : MonoBehaviour
 {
 	// Variables_______________________
 	private string titleMessage = "GIJAM2 TEST";
-	private string connectToIP = "117.0.0.1";
+	private string connectToIP = "127.0.0.1";
 	private int connectionPort = 26500;
 	private bool useNat = false;
 	private string ipAddress;

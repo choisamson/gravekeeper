@@ -12,6 +12,6 @@ public class Client : MonoBehaviour {
 	}
 
 	void SpawnPlayer(){ 
-
+		Transform myTransform = (Transform)Network.Instantiate (cubePrefab, transform.position, transform.rotation, 0);
 	}
 }
