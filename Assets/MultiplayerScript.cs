@@ -7,7 +7,7 @@ public class MultiplayerScript : MonoBehaviour
 {
 	// Variables_______________________
 	private string titleMessage = "GIJAM2 TEST";
-	private string connectToIP = "127.0.0.1";
+	public string connectToIP;
 	private int connectionPort = 26500;
 	private bool useNat = false;
 	private string ipAddress;
@@ -34,6 +34,12 @@ public class MultiplayerScript : MonoBehaviour
 	private int serverDisWindowLeftIndent = 10;
 	private int serverDisWindowTopIndent = 10;
 
+	//These variables are used to define the client disconnect window
+	private Rect clientDisWindow;
+	private int clientDisWindowWidth = 300;
+	private int clientDisWindowHeight = 170;
+	private bool showDisconnectWindow = false;
+
 	//Variables End______________________
 
 	// Use this for initialization
@@ -53,12 +59,19 @@ public class MultiplayerScript : MonoBehaviour
 		if (playerName == "") {
 			playerName = "Generic Name";
 		}
+
+		connectToIP = PlayerPrefs.GetString ("IP");
+		if (connectToIP == "") {
+			connectToIP = "127.0.0.1" ;
+		}
 	}
 
 		// Update is called once per frame
 	void Update ()
 	{
-
+		if (Input.GetKeyDown (KeyCode.Escape)) {
+			showDisconnectWindow = !showDisconnectWindow;
+		}
 	}
 
 	void ConnectWindow (int windowID)
@@ -129,6 +142,8 @@ public class MultiplayerScript : MonoBehaviour
 
 			connectToIP = GUILayout.TextField(connectToIP);
 
+			PlayerPrefs.SetString("IP", connectToIP);
+
 			GUILayout.Space(5);
 
 			//Player can type in port number for server they want to connect to into the text field
@@ -172,6 +187,44 @@ public class MultiplayerScript : MonoBehaviour
 		}
 	}
 
+	void ClientDisconnectWindow (int windowID){
+		//Show the player the server they are connected to and the ping of their connection
+		GUILayout.Label ("Connected to Server: " + serverName);
+		GUILayout.Label ("ping: " + Network.GetAveragePing (Network.connections [0]));
+
+		GUILayout.Space (7);
+
+		//Disconnect player if player chooses to disconnect
+		if (GUILayout.Button ("Disconnect", GUILayout.Height (25))) {
+			Network.Disconnect();
+		}
+
+		GUILayout.Space (5);
+
+		//Button allows webplayer who as gone fullscreen to be able to return to the game using esc key
+		if (GUILayout.Button ("Return to Game", GUILayout.Height (25))) {
+			showDisconnectWindow = false;
+		}
+	}
+
+	void OnDisconnectedFromServer (){
+
+		//If player loses the connection or leaves the scene then level is restarted on their computer
+		Application.LoadLevel(Application.loadedLevel);
+	}
+
+	void OnPlayerDisconnected(NetworkPlayer networkPlayer){
+
+		//when player leaves the server delete them across the network along with their RPCs so other players no longer see them
+		Network.RemoveRPCs (networkPlayer);
+
+		Network.DestroyPlayerObjects (networkPlayer);
+	}
+
+	void OnPlayerConnected (NetworkPlayer networkPlayer){
+		networkView.RPC ("TellPlayerServerName", networkPlayer, serverName);
+	}
+
 	void OnGUI(){
 	//If the player is disconnected then run the COnnectWindow function
 		if (Network.peerType == NetworkPeerType.Disconnected) {
@@ -191,7 +244,21 @@ public class MultiplayerScript : MonoBehaviour
 		if (Network.peerType == NetworkPeerType.Server){
 			//Defining the Rect for the server's disconnect window
 			serverDisWindow =  new Rect (serverDisWindowLeftIndent, serverDisWindowTopIndent, serverDisWindowWidth, serverDisWindowHeight);
+
 			serverDisWindow = GUILayout.Window(1, serverDisWindow, ServerDisconnectWindow, "");
 		}
+
+		//If connection type is a client then show a window that allows them to disconnect from server
+		if (Network.peerType == NetworkPeerType.Client && showDisconnectWindow ==true){
+
+			clientDisWindow = new Rect(Screen.width / 2 - clientDisWindowWidth/2, Screen.height/2 - clientDisWindowHeight/2, clientDisWindowWidth, clientDisWindowHeight);
+
+			clientDisWindow = GUILayout.Window (1, clientDisWindow, ClientDisconnectWindow, "");
+		}
+	}
+
+	[RPC]
+	void TellPlayerServerName (string servername){
+		serverName = servername;
 	}
 }
