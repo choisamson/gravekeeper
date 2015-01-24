@@ -1,12 +1,7 @@
-﻿﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class Cube : MonoBehaviour {
-	
-	// Use this for initialization
-	void Start () {
-		
-	}
 	
 	void Awake(){
 		if (!networkView.isMine) {
@@ -22,7 +17,7 @@ public class Cube : MonoBehaviour {
 			transform.Translate(speed * moveDir * Time.deltaTime);
 		}
 	}
-	
+
 	void OnSerializeNetworkView(BitStream stream, NetworkMessageInfo info) {
 		if (stream.isWriting) { 
 			Vector3 myPosition = transform.position; 
@@ -32,6 +27,5 @@ public class Cube : MonoBehaviour {
 			stream.Serialize(ref receivedPosition);
 			transform.position = receivedPosition; 
 		}
-	}
-	
+	}	
 }
