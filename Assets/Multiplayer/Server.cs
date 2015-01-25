@@ -33,6 +33,13 @@ public class Server : MonoBehaviour
 	private int serverDisWindowHeight = 150;
 	private int serverDisWindowLeftIndent = 10;
 	private int serverDisWindowTopIndent = 10;
+	private bool showServerDisWindow = false;
+
+	//These variables are used to define the client disconnect window
+	private Rect clientDisWindow;
+	private int clientDisWindowWidth = 300;
+	private int clientDisWindowHeight = 170;
+	private bool showDisconnectWindow = false;
 
 	//Variables End______________________
 
@@ -58,7 +65,11 @@ public class Server : MonoBehaviour
 		// Update is called once per frame
 	void Update ()
 	{
-
+		if(Input.GetKeyDown(KeyCode.Escape))
+		{
+			showDisconnectWindow = !showDisconnectWindow;
+			showServerDisWindow = !showServerDisWindow;
+		}
 	}
 
 	void ConnectWindow (int windowID)
@@ -156,22 +167,62 @@ public class Server : MonoBehaviour
 	}
 
 	void ServerDisconnectWindow(int windowID){
-		GUILayout.Label ("Server Name: " + serverName);
+				GUILayout.Label ("Server Name: " + serverName);
 
-		//Show number of players connected
-		GUILayout.Label ("Number of Players Connected: "+ Network.connections.Length);
+				//Show number of players connected
+				GUILayout.Label ("Number of Players Connected: " + Network.connections.Length);
 
-		//If there is at least one connection then show average ping
-		if (Network.connections.Length >= 1) {
-			GUILayout.Label("Ping: " +Network.GetAveragePing(Network.connections[0]));
+				//If there is at least one connection then show average ping
+				if (Network.connections.Length >= 1) {
+						GUILayout.Label ("Ping: " + Network.GetAveragePing (Network.connections [0]));
+				}
+
+				//Shutdown server if user clicks button.
+				if (GUILayout.Button ("ShutdownServer")) {
+						Network.Disconnect ();
+				}
+				if (GUILayout.Button ("Return to Game", GUILayout.Height (25))) {
+						showServerDisWindow = false;
+				}
+	}
+	void ClientDisconnectWindow (int windowID){
+		//Show the player the server they are connected to and the ping of their connection
+		GUILayout.Label ("Connected to Server: " + serverName);
+		GUILayout.Label ("ping: " + Network.GetAveragePing (Network.connections [0]));
+		
+		GUILayout.Space (7);
+		
+		//Disconnect player if player chooses to disconnect
+		if (GUILayout.Button ("Disconnect", GUILayout.Height (25))) {
+			Network.Disconnect();
 		}
-
-		//Shutdown server if user clicks button.
-		if (GUILayout.Button ("ShutdownServer")) {
-			Network.Disconnect ();
+		
+		GUILayout.Space (5);
+		
+		//Button allows webplayer who as gone fullscreen to be able to return to the game using esc key
+		if (GUILayout.Button ("Return to Game", GUILayout.Height (25))) {
+			showDisconnectWindow = false;
 		}
 	}
-
+	void OnDisconnectedFromServer()
+	{
+		//If a player loses the connection or leaves the scene then
+		//the level is restarted on their computer.
+		
+		Application.LoadLevel(Application.loadedLevel);
+	}
+	
+	
+	void OnPlayerDisconnected(NetworkPlayer networkPlayer)
+	{
+		//When the player leaves the server delete them across the network
+		//along with their RPCs so that other players no longer see them.
+		
+		Network.RemoveRPCs(networkPlayer);
+		
+		Network.DestroyPlayerObjects(networkPlayer);	
+	}
+	
 	void OnGUI(){
 	//If the player is disconnected then run the COnnectWindow function
 		if (Network.peerType == NetworkPeerType.Disconnected) {
@@ -188,10 +239,22 @@ public class Server : MonoBehaviour
 		}
 
 		//If the game is running as a server then run the serverDisconnecWindow Function
-		if (Network.peerType == NetworkPeerType.Server){
+		if (Network.peerType == NetworkPeerType.Server && showServerDisWindow ==true){
 			//Defining the Rect for the server's disconnect window
-			serverDisWindow =  new Rect (serverDisWindowLeftIndent, serverDisWindowTopIndent, serverDisWindowWidth, serverDisWindowHeight);
+			serverDisWindow =  new Rect (serverDisWindowLeftIndent, serverDisWindowTopIndent, 
+			                             serverDisWindowWidth, serverDisWindowHeight);
 			serverDisWindow = GUILayout.Window(1, serverDisWindow, ServerDisconnectWindow, "");
 		}
+
+		if(Network.peerType == NetworkPeerType.Client && showDisconnectWindow == true)
+		{
+			clientDisWindow = new Rect(Screen.width / 2 - clientDisWindowWidth / 2,
+			                               Screen.height / 2 - clientDisWindowHeight / 2,
+			                               clientDisWindowWidth, clientDisWindowHeight);
+			
+			clientDisWindow = GUILayout.Window(1, clientDisWindow, ClientDisconnectWindow, "");
+		}
+		
 	}
+
 }
