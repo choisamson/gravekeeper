@@ -14,6 +14,9 @@ public class Client : MonoBehaviour {
 	private int numHuman = 0;
 	private int numMonster = 0;
 	private int maxMonster ;
+	
+	public bool monsterExists = false;
+	public bool humanExists = false;
 
 	//Used to determine which team the player is on.
 	
@@ -52,15 +55,32 @@ public class Client : MonoBehaviour {
 	void OnConnectedToServer(){ 
 		justConnectedToServer = true;
 	}
+	// New_______________________________________________________
+	void Update(){
+		if (!monsterExists) {
+			GameObject monster = GameObject.Find ("Monster(Clone)");
+			if(monster != null){
+				monsterExists = true;
+			}
+		}
+		
+		if (!humanExists) {
+			GameObject human = GameObject.Find ("Human(Clone)");
+			if(human != null){
+				humanExists = true;
+			}
+		}
+
+
+	}
+
 	void JoinTeamWindow (int windowID)
 	{
 		if (justConnectedToServer == true) {
-						//If the player clicks on the Join Red Team button then
-						//assign them to the red team and spawn them into the game.
+		//If the player clicks on the Stay Human button then
+		//assign them to the humans team and spawn them into the game.
 
-			if (numMonster == 0 && numHuman > 0){
-				GUI.enabled = false;
-			}
+		if (!humanExists){
 
 			if (GUILayout.Button ("Stay Human", GUILayout.Height (buttonHeight))) {
 
@@ -68,35 +88,33 @@ public class Client : MonoBehaviour {
 				
 				justConnectedToServer = false;
 				
-				SpawnHuman ();
-									
-				numHuman++;
+				SpawnHuman ();	
+				
 								
 			}
+
 			GUI.enabled =true;
 			
-			
+		}
 						//If the player clicks on the Join Blue Team button then
 						//assign them to the blue team and spawn them into the game.
-			
-			if (numMonster > maxMonster){
-				GUI.enabled = false;
-			}
+			if(!monsterExists){
 
-			if (GUILayout.Button ("Become a Monster", GUILayout.Height (buttonHeight))) {
-					
+				if (GUILayout.Button ("Become a Monster", GUILayout.Height (buttonHeight))) {
+
 					isMonster = true;
 				
 					justConnectedToServer = false;
 				
 					SpawnMonster ();
 									
-					numMonster ++;
+				}
+				GUI.enabled = true; 
 			}
-			GUI.enabled = true;
+
 		}
 	}
-
+	//New End___________________________________________________
 	void SpawnMonster(){ 
 
 		monster = (Transform)Network.Instantiate (monsterPrefab, new Vector3 (36, 0, 0), transform.rotation, 0);
