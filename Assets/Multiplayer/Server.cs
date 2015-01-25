@@ -34,6 +34,14 @@ public class Server : MonoBehaviour
 	private int serverDisWindowLeftIndent = 10;
 	private int serverDisWindowTopIndent = 10;
 
+	//These are used in setting the winning score.
+	
+	public int winningScore = 20;
+	
+	private int scoreButtonWdith = 40;
+	
+	private GUIStyle plainStyle = new GUIStyle();
+
 	//Variables End______________________
 
 	// Use this for initialization
@@ -171,6 +179,32 @@ public class Server : MonoBehaviour
 			Network.Disconnect ();
 		}
 	}
+	void OnDisconnectedFromServer()
+	{
+		//If a player loses the connection or leaves the scene then
+		//the level is restarted on their computer.
+		
+		Application.LoadLevel(Application.loadedLevel);
+	}
+	
+	
+	void OnPlayerDisconnected(NetworkPlayer networkPlayer)
+	{
+		//When the player leaves the server delete them across the network
+		//along with their RPCs so that other players no longer see them.
+		
+		Network.RemoveRPCs(networkPlayer);
+		
+		Network.DestroyPlayerObjects(networkPlayer);	
+	}
+	
+	
+	void OnPlayerConnected(NetworkPlayer networkPlayer)
+	{
+		networkView.RPC("TellPlayerServerName", networkPlayer, serverName);	
+		
+		networkView.RPC("TellEveryoneWinningCriteria", networkPlayer, winningScore);
+	}
 
 	void OnGUI(){
 	//If the player is disconnected then run the COnnectWindow function
@@ -185,7 +219,7 @@ public class Server : MonoBehaviour
 			connectionWindowRect = new Rect (leftIndent, topIndent, connectionWindowWidth, connectionWindowHeight);
 
 			connectionWindowRect = GUILayout.Window (0, connectionWindowRect,ConnectWindow, titleMessage);
-		}
+	}
 
 		//If the game is running as a server then run the serverDisconnecWindow Function
 		if (Network.peerType == NetworkPeerType.Server){
@@ -193,5 +227,25 @@ public class Server : MonoBehaviour
 			serverDisWindow =  new Rect (serverDisWindowLeftIndent, serverDisWindowTopIndent, serverDisWindowWidth, serverDisWindowHeight);
 			serverDisWindow = GUILayout.Window(1, serverDisWindow, ServerDisconnectWindow, "");
 		}
+	}
+	//Used to tell the MultiplayerScript in connected players the serverName. Otherwise
+	//players connecting wouldn't be able to see the name of the server.
+	
+	[RPC]
+	void TellPlayerServerName (string servername){
+		serverName = servername;	
+	}
+	
+	
+	//This RPC is sent to all players from the server to tell them of the new winning
+	//score criteria.
+	
+	[RPC]
+	void TellEveryoneWinningCriteria (int winScore){
+		GameObject gameManager = GameObject.Find("GameManager");
+		
+		ScoreTable scoreScript = gameManager.GetComponent<ScoreTable>();
+		
+		scoreScript.winningScore = winScore;
 	}
 }
