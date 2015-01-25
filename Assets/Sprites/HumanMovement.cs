@@ -5,12 +5,16 @@ using System.Collections.Generic;
 public class HumanMovement : MonoBehaviour 
 {
 	public Transform torchPrefab;
-    public float magnitude = 5;
-    public float speed = 5;
+	public Transform trapPrefab;
+	public GameObject manaBar;
+	public float magnitude = 5;
+	public float speed = 5;
 	
 	Vector3 lastPosition;
 	float minimumMovement = .05f;
-
+	
+	private float mana = 0f;
+	
 	void Update()
 	{
 		if (networkView.isMine) {
@@ -20,20 +24,26 @@ public class HumanMovement : MonoBehaviour
 				lastPosition = transform.position;
 				networkView.RPC("SetPosition", RPCMode.Others, transform.position);
 			}
-
-			if (Input.GetButtonUp("Torch")){
+			
+			/*if (Input.GetButtonUp("Torch")){
 				Network.Instantiate (torchPrefab, transform.position, transform.rotation, 0);
+			}*/
+			
+			if (Input.GetButtonUp ("Trap")){
+				if (mana == 300) {
+					Network.Instantiate (trapPrefab, transform.position, transform.rotation, 0);
+					mana = 0;
+				} else {
+					//TODO: make a toast or some notification of oom
+				}
+			}
+			
+			if (mana < 300){
+				mana ++;
 			}
 		}
-	}
-
-	void OnTriggerEnter2D(Collider2D collider) {
-		if (collider.name == "Monster(Clone)") {
-			GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
-			foreach(GameObject sprite in sprites) {
-				sprite.renderer.enabled = false;
-			}
-		}
+		
+		manaBar.transform.localScale = new Vector3 (mana / 300f, 1f, 1f);
 	}
 	
 	[RPC]
