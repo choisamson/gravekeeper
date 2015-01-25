@@ -8,15 +8,82 @@ public class MonsterMovement: MonoBehaviour
 	public float speed = 5;
 	
 	private Vector3 origPos = Vector3.zero;
+
+	//DASH
+	float dashDurationCounter;
+	
+	bool isDashing;
+	
+	private int dashTapCounter;
+	private float forwardAccel;  // The current acceleration of the player
+	
+	private static int doubleTapTime = 60; // The amount of ticks that can occur between two key presses to double tap it
+	
+	private static float forwardReg = 5f;   // The ordinary acceleration
+	private static float forwardDash = 30.0f;  // The acceleration while dashing
+	private static float dashDuration = 20; //dash duration in frames
+	//CON
 	
 	void Start()
 	{
-		origPos = transform.position;
+		dashTapCounter = 0;
+		dashDurationCounter = 0;
+		forwardAccel = 0.0f;
+		isDashing = false;
 	}
 	
 	void Update()
 	{
 		if (networkView.isMine) {
+
+			//DASH
+			rigidbody2D.angularVelocity = 0;
+			
+			if (Input.GetButton ("Right")) {
+				if(rigidbody2D.velocity.magnitude < 30.0f) {
+					//rigidbody2D.angularVelocity = rigidbody2D.angularVelocity * 0.8f;
+					rigidbody2D.velocity += new Vector2 ( 2 * forwardAccel , 0);
+				} else {
+					//						rigidbody2D.angularVelocity = rigidbody2D.angularVelocity * 0.5f;
+					rigidbody2D.velocity += new Vector2 ( 2 * forwardAccel , 0);
+				}
+				rigidbody2D.gravityScale = 0.0f;
+			}
+			
+			
+			if (Input.GetButtonDown ("Right") && isDashing == false) {
+				
+				if (dashTapCounter > 0) {
+					isDashing = true;
+					forwardAccel = forwardDash;
+					dashDurationCounter = dashDuration;
+				} else {
+					forwardAccel = forwardReg;
+				}
+				dashTapCounter = doubleTapTime;
+			}
+			
+			if(isDashing){
+				dashDurationCounter--;
+				if(dashDurationCounter == 0){
+					isDashing = false;
+					if (forwardAccel > forwardReg){
+						forwardAccel = forwardAccel * 0.6f;
+					}
+				}
+			}
+			
+			
+			if (dashTapCounter > 0) {
+				dashTapCounter--;
+			}
+			
+			//Decelerate if going past max speed
+			if(rigidbody2D.velocity.magnitude > 10){
+				rigidbody2D.velocity = rigidbody2D.velocity * 0.7f;
+			}
+			//CON
+
 			Vector3 moveDir = new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0);
 			float speed = 5; 
 			transform.Translate (speed * moveDir * Time.deltaTime);
