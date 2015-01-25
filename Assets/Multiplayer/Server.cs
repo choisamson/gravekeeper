@@ -278,6 +278,16 @@ public class Server : MonoBehaviour
 			} else {
 				GUI.DrawTexture(new Rect(Screen.width - 70f, 10f, 20f, 20f), sunTexture, ScaleMode.ScaleToFit, true, 0f);
 				GUI.Label (timerWindow, "Time");
+
+				Client client = GameObject.Find ("client").GetComponent<Client>();
+
+				bool humanAlive = GameObject.FindGameObjectsWithTag("human")[0].renderer.enabled;
+
+				if (client.isHuman) {
+					Debug.Log ("Win");
+				} else {
+					Debug.Log ("Lose");
+				}
 			}
 		}
 	}
