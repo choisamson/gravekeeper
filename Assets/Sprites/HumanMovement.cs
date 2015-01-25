@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class HumanMovement : MonoBehaviour 
 {
+	public Transform torchPrefab;
     public float magnitude = 5;
     public float speed = 5;
 	
@@ -19,6 +20,10 @@ public class HumanMovement : MonoBehaviour
 			if (Vector3.Distance(transform.position, lastPosition) > minimumMovement) {
 				lastPosition = transform.position;
 				networkView.RPC("SetPosition", RPCMode.Others, transform.position);
+			}
+
+			if (Input.GetButtonUp("Right")){
+				Network.Instantiate (torchPrefab, transform.position, transform.rotation, 0);
 			}
 		}
 	}

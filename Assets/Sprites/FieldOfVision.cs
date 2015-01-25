@@ -29,6 +29,26 @@ public class FieldOfVision: MonoBehaviour
 	}
 
 	void Display() {
+		GameObject[] torches = GameObject.FindGameObjectsWithTag("torch");
+		float minTorchDistance = 100;
+		
+		for (int i = 0; i < torches.Length; i ++) {
+			if (!visible) {
+				float torchDistance = Vector3.Distance (torches[i].transform.position, this.gameObject.transform.position);
+				
+				if (torchDistance < 8f) {
+					if (torchDistance < minTorchDistance) {
+						minTorchDistance = torchDistance;
+					}
+
+					gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((8f - torchDistance) / 8f));
+					visible = true;
+				} else {
+					gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
+				}
+			}
+		}
+
 		if (player == null) {
 			player = GameObject.Find (objectName);
 		}
@@ -40,23 +60,14 @@ public class FieldOfVision: MonoBehaviour
 		}
 
 		if (distance < 10f) {
-			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - distance) / 10f));
-			visible = true;
-		} else {
-			GameObject[] torches = GameObject.FindGameObjectsWithTag("torch");
-			
-			for (int i = 0; i < torches.Length; i ++) {
-				if (!visible) {
-					float torchDistance = Vector3.Distance (torches[i].transform.position, this.gameObject.transform.position);
-					
-					if (torchDistance < 10f) {
-						gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - torchDistance) / 10f));
-						visible = true;
-					} else {
-						gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
-					}
-				}
+			if (((10f - distance) / 10f) >= ((8f - minTorchDistance) / 8f) || !visible){
+				gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, (10f - distance) / 10f);
+			} else {
+				gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, (8f - minTorchDistance) / 8f);
 			}
+			visible = true;
+		} else if (!visible){
+			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
 		}
 	}
 
