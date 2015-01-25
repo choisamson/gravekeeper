@@ -25,10 +25,6 @@ public class HumanMovement : MonoBehaviour
 				networkView.RPC("SetPosition", RPCMode.Others, transform.position);
 			}
 			
-			/*if (Input.GetButtonUp("Torch")){
-				Network.Instantiate (torchPrefab, transform.position, transform.rotation, 0);
-			}*/
-			
 			if (Input.GetButtonUp ("Trap")){
 				if (mana == 300) {
 					Network.Instantiate (trapPrefab, transform.position, transform.rotation, 0);
@@ -44,6 +40,18 @@ public class HumanMovement : MonoBehaviour
 		}
 		
 		manaBar.transform.localScale = new Vector3 (mana / 300f, 1f, 1f);
+	}
+
+	void OnTriggerEnter2D(Collider2D collider){
+		if (collider.name == "Monster(Clone)") {
+			//TODO: death animation
+			GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
+			foreach(GameObject sprite in sprites) {
+				sprite.renderer.enabled = false;
+			}
+
+			GameObject.FindGameObjectWithTag("mana").renderer.enabled = false;
+		}
 	}
 	
 	[RPC]
