@@ -7,6 +7,14 @@ public class FieldOfVision: MonoBehaviour
 	private GameObject player;
 	private bool visible;
     private Color kColor;
+	private float playerVisibleRange;
+
+	private const float MAX_TORCH_RANGE = 8f;
+	private const float EXTRA_TORCH_RANGE = 5f;
+	private const float MAX_PLAYER_RANGE = 10f;
+	private const float TORCH_VISION_RANGE = 3f;
+	private const float HUMAN_VISION_RANGE = 3f;
+	private const float MONSTER_VISION_RANGE = 4f;
 
 	void Start ()
     {
@@ -31,26 +39,32 @@ public class FieldOfVision: MonoBehaviour
 	void Display() {
 		GameObject[] torches = GameObject.FindGameObjectsWithTag("torch");
 		float minTorchDistance = 100;
+		float torchAlpha = 0f;
 		
 		for (int i = 0; i < torches.Length; i ++) {
 			if (!visible) {
 				float torchDistance = Vector3.Distance (torches[i].transform.position, this.gameObject.transform.position);
-				
-				if (torchDistance < 8f) {
-					if (torchDistance < minTorchDistance) {
-						minTorchDistance = torchDistance;
-					}
 
-					gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((8f - torchDistance) / 8f));
+				if (torchDistance < MAX_TORCH_RANGE) {
+					if (torchDistance < TORCH_VISION_RANGE) {
+						torchAlpha = 1f;
+					} else {
+						torchAlpha = (EXTRA_TORCH_RANGE - (torchDistance - TORCH_VISION_RANGE)) / EXTRA_TORCH_RANGE;
+					}
 					visible = true;
 				} else {
-					gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
+					torchAlpha = 0f;
 				}
 			}
 		}
 
 		if (player == null) {
 			player = GameObject.Find (objectName);
+			if (objectName == "Human(Clone)") {
+				playerVisibleRange = HUMAN_VISION_RANGE;
+			} else if (objectName == "Monster(Clone)") {
+				playerVisibleRange = MONSTER_VISION_RANGE;
+			}
 		}
 
 		float distance = 100;
@@ -59,16 +73,16 @@ public class FieldOfVision: MonoBehaviour
 			distance = Vector3.Distance (player.transform.position, this.gameObject.transform.position);
 		}
 
-		if (distance < 10f) {
-			if (((10f - distance) / 10f) >= ((8f - minTorchDistance) / 8f) || !visible){
-				gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, (10f - distance) / 10f);
-			} else {
-				gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, (8f - minTorchDistance) / 8f);
-			}
-			visible = true;
-		} else if (!visible){
-			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
+		float playerAlpha = 0f;
+		if (distance < playerVisibleRange) {
+			playerAlpha = 1f;
+		} else if (distance < MAX_PLAYER_RANGE) {
+			playerAlpha = ((MAX_PLAYER_RANGE - playerVisibleRange) - (distance - playerVisibleRange)) / (MAX_PLAYER_RANGE - playerVisibleRange);
+		} else {
+			playerAlpha = 0f;
 		}
+
+		gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, Mathf.Max (torchAlpha, playerAlpha));
 	}
 
     void OnDisable()
