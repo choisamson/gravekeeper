@@ -47,8 +47,11 @@ public class HumanMovement : MonoBehaviour
 			//TODO: death animation
 			GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
 			foreach(GameObject sprite in sprites) {
-				sprite.renderer.enabled = false;
+			sprite.renderer.enabled = false;
 			}
+
+			Client client = GameObject.Find("client").GetComponent<Client>();
+			client.destroyed= true;
 
 			GameObject.FindGameObjectWithTag("mana").renderer.enabled = false;
 		}

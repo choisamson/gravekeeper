@@ -41,6 +41,12 @@ public class Client : MonoBehaviour {
 	
 	private int buttonHeight = 40;
 
+	public bool matchRestart = false;
+
+	public bool firstSpawn = false;
+
+	public bool iAmDestroyed = false;
+
 	void Start(){
 
 		maxMonster = numHuman / 2;
@@ -69,13 +75,12 @@ public class Client : MonoBehaviour {
 				humanExists = true;
 			}
 		}
-
-
+	
 	}
 
 	void JoinTeamWindow (int windowID)
 	{
-		if (justConnectedToServer == true) {
+		if (justConnectedToServer == true || matchRestart == true) {
 		//If the player clicks on the Stay Human button then
 		//assign them to the humans team and spawn them into the game.
 
@@ -87,7 +92,11 @@ public class Client : MonoBehaviour {
 				
 				justConnectedToServer = false;
 				
+				matchRestart = false;
+
 				SpawnHuman ();	
+				
+				firstSpawn = true;
 				
 								
 			}
@@ -105,8 +114,11 @@ public class Client : MonoBehaviour {
 				
 					justConnectedToServer = false;
 				
+					matchRestart = false;
+
 					SpawnMonster ();
-									
+
+					firstSpawn = true;
 				}
 				GUI.enabled = true; 
 			}
@@ -139,5 +151,20 @@ public class Client : MonoBehaviour {
 			joinTeamMenu = GUILayout.Window(0, joinTeamMenu, JoinTeamWindow,
 			                                joinTeamWindowTitle);
 		}
+		if(iAmDestroyed == true){
+			if (isHuman == true){
+				Debug.Log("Dead");
+				GUILayout.Label("MONSTER HATH EATETH THOU ARSE");
+				
+			}
+			if (isMonster == true){
+				Debug.Log("Dead");
+				GUILayout.Label ("WIZARD HATH EATETH THOU ARSE");
+			}
+		}
+	}
+	public bool destroyed{
+		get{ return iAmDestroyed;}
+		set{ iAmDestroyed = value;}
 	}
 }

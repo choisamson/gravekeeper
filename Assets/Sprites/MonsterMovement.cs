@@ -104,6 +104,14 @@ public class MonsterMovement: MonoBehaviour
 	void OnTriggerEnter2D (Collider2D collider) {
 		if (collider.name == "Trap(Clone)") {
 			health --;
+			if (health == 0){
+				GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
+				foreach(GameObject sprite in sprites) {
+					sprite.renderer.enabled = false;
+				}
+				Client client = GameObject.Find("client").GetComponent<Client>();
+				client.destroyed= true;
+			}
 		}
 	}
 }
