@@ -5,6 +5,7 @@ public class FieldOfVision: MonoBehaviour
 {
 	public string objectName;
 	private GameObject player;
+	private bool visible;
     private Color kColor;
 
 	void Start ()
@@ -16,34 +17,46 @@ public class FieldOfVision: MonoBehaviour
         Light2D.RegisterEventListener(LightEventListenerType.OnStay, OnLightStay);
         Light2D.RegisterEventListener(LightEventListenerType.OnExit, OnLightExit);
 
-		player = GameObject.Find (objectName);
-		float distance = 100;
-		
-		if (player != null) {
-			distance = Vector3.Distance (player.transform.position, this.gameObject.transform.position);
-		}
-		
-		if (distance < 10f) {
-			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - distance) / 10f));
-		} else {
-			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
-		}
+		visible = false;
+		Display();
 
         // Keep the initial object color [For Visualization]
 //        kColor = gameObject.renderer.material.color;
     }
 	void Update(){
-		player = GameObject.Find (objectName);
+		visible = false;
+		Display();
+	}
+
+	void Display() {
+		if (player == null) {
+			player = GameObject.Find (objectName);
+		}
+
 		float distance = 100;
-		
+
 		if (player != null) {
 			distance = Vector3.Distance (player.transform.position, this.gameObject.transform.position);
 		}
-		
+
 		if (distance < 10f) {
 			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - distance) / 10f));
+			visible = true;
 		} else {
-			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
+			GameObject[] torches = GameObject.FindGameObjectsWithTag("torch");
+			
+			for (int i = 0; i < torches.Length; i ++) {
+				if (!visible) {
+					float torchDistance = Vector3.Distance (torches[i].transform.position, this.gameObject.transform.position);
+					
+					if (torchDistance < 10f) {
+						gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - torchDistance) / 10f));
+						visible = true;
+					} else {
+						gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
+					}
+				}
+			}
 		}
 	}
 
