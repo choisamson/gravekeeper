@@ -33,6 +33,7 @@ public class Server : MonoBehaviour
 	private int serverDisWindowHeight = 150;
 	private int serverDisWindowLeftIndent = 10;
 	private int serverDisWindowTopIndent = 10;
+
 	private bool showServerDisWindow = false;
 
 	//These variables are used to define the client disconnect window
@@ -40,6 +41,12 @@ public class Server : MonoBehaviour
 	private int clientDisWindowWidth = 300;
 	private int clientDisWindowHeight = 170;
 	private bool showDisconnectWindow = false;
+	
+	public Texture2D moonTexture;
+	public Texture2D sunTexture;
+	private double startTime = 0d;
+	private Rect timerWindow;
+	private bool started = false;
 
 	//Variables End______________________
 
@@ -60,15 +67,22 @@ public class Server : MonoBehaviour
 		if (playerName == "") {
 			playerName = "Generic Name";
 		}
+
+//		started = false;
 	}
 
 		// Update is called once per frame
 	void Update ()
 	{
-		if(Input.GetKeyDown(KeyCode.Escape))
-		{
+		if (Input.GetKeyDown (KeyCode.Escape)) {
 			showDisconnectWindow = !showDisconnectWindow;
 			showServerDisWindow = !showServerDisWindow;
+		}
+
+		if (GameObject.Find ("Human(Clone)") != null && GameObject.Find ("Monster(Clone)") != null && !started) {
+			startTime = Network.time;
+			started = true;
+			Debug.Log ("Game started");
 		}
 	}
 
@@ -167,23 +181,23 @@ public class Server : MonoBehaviour
 	}
 
 	void ServerDisconnectWindow(int windowID){
-				GUILayout.Label ("Server Name: " + serverName);
+		GUILayout.Label ("Server Name: " + serverName);
 
-				//Show number of players connected
-				GUILayout.Label ("Number of Players Connected: " + Network.connections.Length);
+		//Show number of players connected
+		GUILayout.Label ("Number of Players Connected: " + Network.connections.Length);
 
-				//If there is at least one connection then show average ping
-				if (Network.connections.Length >= 1) {
-						GUILayout.Label ("Ping: " + Network.GetAveragePing (Network.connections [0]));
-				}
+		//If there is at least one connection then show average ping
+		if (Network.connections.Length >= 1) {
+				GUILayout.Label ("Ping: " + Network.GetAveragePing (Network.connections [0]));
+		}
 
-				//Shutdown server if user clicks button.
-				if (GUILayout.Button ("ShutdownServer")) {
-						Network.Disconnect ();
-				}
-				if (GUILayout.Button ("Return to Game", GUILayout.Height (25))) {
-						showServerDisWindow = false;
-				}
+		//Shutdown server if user clicks button.
+		if (GUILayout.Button ("ShutdownServer")) {
+				Network.Disconnect ();
+		}
+		if (GUILayout.Button ("Return to Game", GUILayout.Height (25))) {
+				showServerDisWindow = false;
+		}
 	}
 	void ClientDisconnectWindow (int windowID){
 		//Show the player the server they are connected to and the ping of their connection
@@ -254,7 +268,17 @@ public class Server : MonoBehaviour
 			
 			clientDisWindow = GUILayout.Window(1, clientDisWindow, ClientDisconnectWindow, "");
 		}
-		
-	}
 
+		if (started) {
+			Rect timerWindow = new Rect (Screen.width - 40f, 10f, 50f, 20f);
+			int time = 90 - (int)(Network.time - startTime);
+			if (time > 0) {
+				GUI.DrawTexture(new Rect(Screen.width - 70f, 10f, 20f, 20f), moonTexture, ScaleMode.ScaleToFit, true, 0f);
+				GUI.Label (timerWindow, time + " s");
+			} else {
+				GUI.DrawTexture(new Rect(Screen.width - 70f, 10f, 20f, 20f), sunTexture, ScaleMode.ScaleToFit, true, 0f);
+				GUI.Label (timerWindow, "Time");
+			}
+		}
+	}
 }
