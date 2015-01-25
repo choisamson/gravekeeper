@@ -8,9 +8,6 @@ public class Client : MonoBehaviour {
 	public Transform humanPrefab;
 	public Transform monsterPrefab;
 
-	private Transform human;
-	private Transform monster;
-
 	private int numHuman = 0;
 	private int numMonster = 0;
 	private int maxMonster ;
@@ -19,27 +16,22 @@ public class Client : MonoBehaviour {
 	public bool humanExists = false;
 
 	//Used to determine which team the player is on.
-	
 	public bool isMonster = false;
-	
 	public bool isHuman = false;
 	
 	
 	//Used to define the JoinTeamWindow.
 	
 	private Rect joinTeamMenu;
-	
 	private string joinTeamWindowTitle = "Team Selection";
-	
 	private int joinTeamWindowWidth = 330;
-	
 	private int joinTeamWindowHeight = 100;
-	
 	private int joinTeamLeftIndent;
-	
 	private int joinTeamTopIndent;
-	
 	private int buttonHeight = 40;
+	public bool matchRestart = false;
+	public bool firstSpawn = false;
+	private bool gameOver = false;
 
 	void Start(){
 
@@ -69,13 +61,12 @@ public class Client : MonoBehaviour {
 				humanExists = true;
 			}
 		}
-
-
+	
 	}
 
 	void JoinTeamWindow (int windowID)
 	{
-		if (justConnectedToServer == true) {
+		if (justConnectedToServer == true || matchRestart == true) {
 		//If the player clicks on the Stay Human button then
 		//assign them to the humans team and spawn them into the game.
 
@@ -87,7 +78,11 @@ public class Client : MonoBehaviour {
 				
 				justConnectedToServer = false;
 				
+				matchRestart = false;
+
 				SpawnHuman ();	
+				
+				firstSpawn = true;
 				
 								
 			}
@@ -105,8 +100,11 @@ public class Client : MonoBehaviour {
 				
 					justConnectedToServer = false;
 				
+					matchRestart = false;
+
 					SpawnMonster ();
-									
+
+					firstSpawn = true;
 				}
 				GUI.enabled = true; 
 			}
@@ -116,11 +114,13 @@ public class Client : MonoBehaviour {
 	//New End___________________________________________________
 	void SpawnMonster(){ 
 
-		monster = (Transform)Network.Instantiate (monsterPrefab, new Vector3 (36, 0, 0), transform.rotation, 0);
+		Network.Instantiate (monsterPrefab, new Vector3 (36, 0, 0), transform.rotation, 0);
 	}
+
 	void SpawnHuman(){
-		human = (Transform)Network.Instantiate (humanPrefab, new Vector3(-36, 0, 0), transform.rotation, 0);
+		Network.Instantiate (humanPrefab, new Vector3(-36, 0, 0), transform.rotation, 0);
 	}
+
 	void OnGUI()
 	{
 		//If the player has just connected to the server then draw the 
@@ -138,6 +138,42 @@ public class Client : MonoBehaviour {
 			
 			joinTeamMenu = GUILayout.Window(0, joinTeamMenu, JoinTeamWindow,
 			                                joinTeamWindowTitle);
+		}
+
+		if(gameOver){
+			HumanMovement human = GameObject.Find("Human(Clone)").GetComponent<HumanMovement>();
+			MonsterMovement monster = GameObject.Find("Monster(Clone)").GetComponent<MonsterMovement>();
+
+			if (human.Alive && monster.Alive) {
+				if(isHuman){
+					GUILayout.Label("MONSTER HATH FAILETH TO EATETH THOU ARSE");
+				} else if (isMonster) {
+					GUILayout.Label("YOU HATH FAILETH TO EATETH THE WIZARD");
+				}
+			} else if (human.Alive && !monster.Alive) {
+				if(isHuman){
+					GUILayout.Label("YOU HATH SLAIN THE ENEMY");
+				} else if (isMonster) {
+					GUILayout.Label("YOU HATH BEEN SLAIN");
+				}
+			} else if (!human.Alive && monster.Alive) {
+				if(isHuman){
+					GUILayout.Label("YOU HATH BEEN MAULETH TO DEATH");
+				} else if (isMonster) {
+					GUILayout.Label("YOU HATH EATETH THE WIZARD");
+				}
+			} else {
+				GUILayout.Label("SUICIDE CULT?");
+			}
+		}
+	}
+
+	public bool GameOver {
+		get{
+			return gameOver;
+		}
+		set {
+			gameOver = value;
 		}
 	}
 }

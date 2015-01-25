@@ -272,12 +272,23 @@ public class Server : MonoBehaviour
 		if (started) {
 			Rect timerWindow = new Rect (Screen.width - 40f, 10f, 50f, 20f);
 			int time = 90 - (int)(Network.time - startTime);
-			if (time > 0) {
+			Client client = GameObject.Find ("client").GetComponent<Client>();
+
+			if (time > 0 && ! client.GameOver) {
 				GUI.DrawTexture(new Rect(Screen.width - 70f, 10f, 20f, 20f), moonTexture, ScaleMode.ScaleToFit, true, 0f);
 				GUI.Label (timerWindow, time + " s");
 			} else {
 				GUI.DrawTexture(new Rect(Screen.width - 70f, 10f, 20f, 20f), sunTexture, ScaleMode.ScaleToFit, true, 0f);
 				GUI.Label (timerWindow, "Time");
+
+				client.GameOver = true;
+				bool humanAlive = GameObject.FindGameObjectsWithTag("human")[0].renderer.enabled;
+
+				if (client.isHuman) {
+					Debug.Log ("Win");
+				} else {
+					Debug.Log ("Lose");
+				}
 			}
 		}
 	}

@@ -14,6 +14,8 @@ public class HumanMovement : MonoBehaviour
 	float minimumMovement = .05f;
 	
 	private float mana = 0f;
+
+	private bool alive = true;
 	
 	void Update()
 	{
@@ -47,8 +49,12 @@ public class HumanMovement : MonoBehaviour
 			//TODO: death animation
 			GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
 			foreach(GameObject sprite in sprites) {
-				sprite.renderer.enabled = false;
+			sprite.renderer.enabled = false;
 			}
+
+			Client client = GameObject.Find("client").GetComponent<Client>();
+			alive = false;
+			client.GameOver = true;
 
 			GameObject.FindGameObjectWithTag("mana").renderer.enabled = false;
 		}
@@ -57,5 +63,11 @@ public class HumanMovement : MonoBehaviour
 	[RPC]
 	void SetPosition(Vector3 newPosition) {
 		transform.position = newPosition;
+	}
+
+	public bool Alive {
+		get {
+			return alive;
+		}
 	}
 }
