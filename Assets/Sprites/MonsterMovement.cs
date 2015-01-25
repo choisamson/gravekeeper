@@ -25,6 +25,8 @@ public class MonsterMovement: MonoBehaviour
 	private static float dashDuration = 15; //dash duration in frames
 	//CON
 
+	private bool alive = true;
+
 	void Start()
 	{
 		dashTapCounter = 0;
@@ -110,8 +112,15 @@ public class MonsterMovement: MonoBehaviour
 					sprite.renderer.enabled = false;
 				}
 				Client client = GameObject.Find("client").GetComponent<Client>();
-				client.destroyed= true;
+				alive = false;
+				client.GameOver = true;
 			}
+		}
+	}
+
+	public bool Alive {
+		get {
+			return alive;
 		}
 	}
 }
