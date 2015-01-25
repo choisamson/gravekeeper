@@ -83,7 +83,6 @@ public class MonsterMovement: MonoBehaviour
 			//CON
 
 			Vector3 moveDir = new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0);
-			float speed = 5; 
 			transform.Translate (speed * moveDir * Time.deltaTime);
 		}
 	}

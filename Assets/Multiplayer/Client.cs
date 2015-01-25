@@ -5,12 +5,12 @@ public class Client : MonoBehaviour {
 	
 	public Transform humanPrefab;
 	public Transform monsterPrefab;
-	public GameObject human;
-	public GameObject monster;
+
+	private Transform human;
+	private Transform monster;
 
 	void OnServerInitialized(){ 
-		Transform myTransform = (Transform)Network.Instantiate (humanPrefab, transform.position, transform.rotation, 0);
-
+		human = (Transform)Network.Instantiate (humanPrefab, new Vector3(-36, 0, 0), transform.rotation, 0);
 	}
 
 
@@ -19,6 +19,7 @@ public class Client : MonoBehaviour {
 	}
 
 	void SpawnPlayer(){ 
-		Transform myTransform = (Transform)Network.Instantiate (monsterPrefab, transform.position, transform.rotation, 0);
+		monster = (Transform)Network.Instantiate (monsterPrefab, new Vector3(36, 0, 0), transform.rotation, 0);
+		GameObject.Find("Human(Clone)").transform.position = new Vector3 (-36, 0, 0);
 	}
 }
