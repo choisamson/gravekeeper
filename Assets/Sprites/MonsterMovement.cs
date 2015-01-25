@@ -21,7 +21,7 @@ public class MonsterMovement: MonoBehaviour
 	
 	private static float forwardReg = 5f;   // The ordinary acceleration
 	private static float forwardDash = 30.0f;  // The acceleration while dashing
-	private static float dashDuration = 20; //dash duration in frames
+	private static float dashDuration = 15; //dash duration in frames
 	//CON
 	
 	void Start()
@@ -39,19 +39,17 @@ public class MonsterMovement: MonoBehaviour
 			//DASH
 			rigidbody2D.angularVelocity = 0;
 			
-			if (Input.GetButton ("Right")) {
-				if(rigidbody2D.velocity.magnitude < 30.0f) {
-					//rigidbody2D.angularVelocity = rigidbody2D.angularVelocity * 0.8f;
-					rigidbody2D.velocity += new Vector2 ( 2 * forwardAccel , 0);
+			if (Input.GetButton ("Dash")) {
+				if(isDashing) {
+					rigidbody2D.velocity += new Vector2 (Input.GetAxis ("Horizontal") * forwardAccel, Input.GetAxis ("Vertical") * forwardAccel);
 				} else {
-					//						rigidbody2D.angularVelocity = rigidbody2D.angularVelocity * 0.5f;
-					rigidbody2D.velocity += new Vector2 ( 2 * forwardAccel , 0);
+					rigidbody2D.velocity = new Vector2(0,0);
 				}
-				rigidbody2D.gravityScale = 0.0f;
+				
 			}
 			
 			
-			if (Input.GetButtonDown ("Right") && isDashing == false) {
+			if (Input.GetButtonDown ("Dash") && isDashing == false) {
 				
 				if (dashTapCounter > 0) {
 					isDashing = true;
@@ -63,7 +61,7 @@ public class MonsterMovement: MonoBehaviour
 				dashTapCounter = doubleTapTime;
 			}
 			
-			if(isDashing){
+			if(isDashing){ 
 				dashDurationCounter--;
 				if(dashDurationCounter == 0){
 					isDashing = false;
