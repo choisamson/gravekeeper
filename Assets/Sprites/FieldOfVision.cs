@@ -3,7 +3,8 @@ using System.Collections;
 
 public class FieldOfVision: MonoBehaviour
 {
-	public GameObject player;
+	public string objectName;
+	private GameObject player;
     private Color kColor;
 
 	void Start ()
@@ -15,14 +16,34 @@ public class FieldOfVision: MonoBehaviour
         Light2D.RegisterEventListener(LightEventListenerType.OnStay, OnLightStay);
         Light2D.RegisterEventListener(LightEventListenerType.OnExit, OnLightExit);
 
+		player = GameObject.Find (objectName);
+		float distance = 100;
+		
+		if (player != null) {
+			distance = Vector3.Distance (player.transform.position, this.gameObject.transform.position);
+		}
+		
+		if (distance < 10f) {
+			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - distance) / 10f));
+		} else {
+			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
+		}
+
         // Keep the initial object color [For Visualization]
 //        kColor = gameObject.renderer.material.color;
     }
 	void Update(){
-		float distance = Vector3.Distance (player.transform.position, this.gameObject.transform.position);
-
+		player = GameObject.Find (objectName);
+		float distance = 100;
+		
+		if (player != null) {
+			distance = Vector3.Distance (player.transform.position, this.gameObject.transform.position);
+		}
+		
 		if (distance < 10f) {
-			gameObject.GetComponent<SpriteRenderer>().color = new Color(1f,1f,1f, ((10f - distance) / 10f) );
+			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, ((10f - distance) / 10f));
+		} else {
+			gameObject.GetComponent<SpriteRenderer> ().color = new Color (1f, 1f, 1f, 0f);
 		}
 	}
 

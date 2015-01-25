@@ -5,9 +5,12 @@ public class Client : MonoBehaviour {
 	
 	public Transform humanPrefab;
 	public Transform monsterPrefab;
+	public GameObject human;
+	public GameObject monster;
 
 	void OnServerInitialized(){ 
 		Transform myTransform = (Transform)Network.Instantiate (humanPrefab, transform.position, transform.rotation, 0);
+
 	}
 
 
