@@ -51,7 +51,6 @@ public class Client : MonoBehaviour {
 		justConnectedToServer = true;
 	}
 
-
 	void OnConnectedToServer(){ 
 		justConnectedToServer = true;
 	}
