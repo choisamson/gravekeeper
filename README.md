@@ -6,7 +6,11 @@ One player depicts the titular gravekeeper, who is trying to survive the night w
 
 Gravekeeper was built using the [Unity game engine](http://unity3d.com/), and uses the [2DVLS library](http://u3d.as/content/pico-games/2dvls/36x).
 
-### Building the Project
+## Releases
+
+* [v1.0](https://github.com/choisamson/gravekeeper/tree/release/Builds)
+
+## Building the Project
 
 1. Clone the repository to your computer
 2. Start Unity, then open the repository folder as a Unity project
@@ -22,7 +26,4 @@ Gravekeeper was built using the [Unity game engine](http://unity3d.com/), and us
 
 ## License
 
-Gravekeeper and its source code are available under the [Creative Commons BY-NC-SA License](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode)
-
-
-
+Gravekeeper and its source code are available under the [Creative Commons BY-NC-SA License](https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode).
