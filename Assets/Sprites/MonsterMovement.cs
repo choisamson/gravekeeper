@@ -26,6 +26,7 @@ public class MonsterMovement: MonoBehaviour
 	//CON
 
 	private bool alive = true;
+	private bool deadCreated = false;
 	public Transform deadmonsterPrefab;
 
 	void Start()
@@ -38,12 +39,16 @@ public class MonsterMovement: MonoBehaviour
 
 	void Update()
 	{
-
-		if (!alive){
-			Network.Instantiate(deadmonsterPrefab, this.transform.position, this.transform.rotation, 0);
-			GameObject[] sprites = GameObject.FindGameObjectsWithTag("monster");
-			foreach(GameObject sprite in sprites) {
-				sprite.renderer.enabled = false;
+		Client client = GameObject.Find ("client").GetComponent<Client> ();
+		Server server = GameObject.Find ("server").GetComponent<Server> ();
+		if (client.GameOver && !deadCreated) {
+			if (!alive || server.GameTime >= 90) {
+				Network.Instantiate (deadmonsterPrefab, this.transform.position, this.transform.rotation, 0);
+				GameObject[] sprites = GameObject.FindGameObjectsWithTag ("monster");
+				foreach (GameObject sprite in sprites) {
+						sprite.renderer.enabled = false;
+				}
+				deadCreated = true;
 			}
 		}
 		if (networkView.isMine && alive) {
@@ -115,13 +120,12 @@ public class MonsterMovement: MonoBehaviour
 	void OnTriggerEnter2D (Collider2D collider) {
 		if (collider.name == "Trap(Clone)") {
 			health --;
-			if (health == 0 && alive == true){
-				
-				Network.Instantiate(deadmonsterPrefab, this.transform.position, this.transform.rotation, 0);
-				GameObject[] sprites = GameObject.FindGameObjectsWithTag("monster");
-				foreach(GameObject sprite in sprites) {
-					sprite.renderer.enabled = false;
-				}
+			if (health == 0 && alive == true){	
+//				Network.Instantiate(deadmonsterPrefab, this.transform.position, this.transform.rotation, 0);
+//				GameObject[] sprites = GameObject.FindGameObjectsWithTag("monster");
+//				foreach(GameObject sprite in sprites) {
+//					sprite.renderer.enabled = false;
+//				}
 				Client client = GameObject.Find("client").GetComponent<Client>();
 				alive = false;
 				client.GameOver = true;

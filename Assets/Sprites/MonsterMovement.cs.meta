@@ -2,7 +2,9 @@ fileFormatVersion: 2
 guid: 61a7895b158b30f4c870f4d355a67c52
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - healthBar: {instanceID: 0}
+  - deadmonsterPrefab: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

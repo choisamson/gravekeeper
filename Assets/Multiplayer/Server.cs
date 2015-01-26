@@ -285,4 +285,16 @@ public class Server : MonoBehaviour
 			}
 		}
 	}
+
+	public double GameTime {
+		get {
+			return Network.time - startTime;
+		}
+	}
+
+	public bool Started {
+		get {
+			return started;
+		}
+	}
 }
