@@ -9,17 +9,18 @@ public class HumanMovement : MonoBehaviour
 	public GameObject manaBar;
 	public float magnitude = 5;
 	public float speed = 5;
-	
+	public bool alive = true;
+
+	public Transform deadhumanPrefab;
+
 	Vector3 lastPosition;
 	float minimumMovement = .05f;
 	
 	private float mana = 0f;
-
-	private bool alive = true;
 	
 	void Update()
 	{
-		if (networkView.isMine) {
+		if (networkView.isMine && alive) {
 			Vector3 moveDir = new Vector3 (Input.GetAxis ("Horizontal"), Input.GetAxis ("Vertical"), 0);
 			transform.Translate (speed * moveDir * Time.deltaTime);
 			if (Vector3.Distance(transform.position, lastPosition) > minimumMovement) {
@@ -43,31 +44,40 @@ public class HumanMovement : MonoBehaviour
 		
 		manaBar.transform.localScale = new Vector3 (mana / 300f, 1f, 1f);
 	}
-
+	
 	void OnTriggerEnter2D(Collider2D collider){
-		if (collider.name == "Monster(Clone)") {
+		if (collider.name == "Monster(Clone)" && alive == true) {
 			//TODO: death animation
+			/*GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
+			foreach(GameObject sprite in sprites) {
+				sprite.renderer.enabled = false;
+			}*/
+
+
+			Network.Instantiate(deadhumanPrefab, this.transform.position, this.transform.rotation, 0);
 			GameObject[] sprites = GameObject.FindGameObjectsWithTag("human");
 			foreach(GameObject sprite in sprites) {
-			sprite.renderer.enabled = false;
+				sprite.renderer.enabled = false;
 			}
 
 			Client client = GameObject.Find("client").GetComponent<Client>();
 			alive = false;
 			client.GameOver = true;
+		}
+	}
 
-			GameObject.FindGameObjectWithTag("mana").renderer.enabled = false;
+	
+	public bool Alive {
+		get {
+			return alive;
+		}
+		set {
+			alive = value;
 		}
 	}
 	
 	[RPC]
 	void SetPosition(Vector3 newPosition) {
 		transform.position = newPosition;
-	}
-
-	public bool Alive {
-		get {
-			return alive;
-		}
 	}
 }
