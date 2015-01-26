@@ -165,6 +165,10 @@ public class Client : MonoBehaviour {
 			} else {
 				GUILayout.Label("SUICIDE CULT?");
 			}
+
+			if(GUILayout.Button("End Match",GUILayout.Height (buttonHeight))){
+				Network.Disconnect();
+			}
 		}
 	}
 

@@ -234,7 +234,8 @@ public class Server : MonoBehaviour
 		
 		Network.RemoveRPCs(networkPlayer);
 		
-		Network.DestroyPlayerObjects(networkPlayer);	
+		Network.DestroyPlayerObjects(networkPlayer);
+		Network.Disconnect();
 	}
 	
 	void OnGUI(){
@@ -271,7 +272,7 @@ public class Server : MonoBehaviour
 
 		if (started) {
 			Rect timerWindow = new Rect (Screen.width - 40f, 10f, 50f, 20f);
-			int time = 90 - (int)(Network.time - startTime);
+			int time = 5 - (int)(Network.time - startTime);
 			Client client = GameObject.Find ("client").GetComponent<Client>();
 
 			if (time > 0 && ! client.GameOver) {
