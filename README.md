@@ -21,7 +21,7 @@ Gravekeeper was built using the [Unity game engine](http://unity3d.com/), and us
 
 * David Cheung
 * Edward Wang
-* Samson Choi ([Github](https://github.com/choisamson))
+* Samson Choi ([Github](https://github.com/shlchoi))
 * Timothy Chau
 
 ## License
